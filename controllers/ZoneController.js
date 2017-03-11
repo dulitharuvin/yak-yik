@@ -15,15 +15,28 @@ module.exports = {
         })
     },
 
-    findById: function () {
+    findById: function (id, callback) {
+        Zone.findById(id, function (err,zone) {
+            if(err){
+                callback(err,null)
+                return
+            }
+            callback(null,zone)
+        })
+    },
 
+    create: function (params, callback) {
+        Zone.create(params, function (err,zone) {
+            if(err){
+                callback(err,null)
+                return
+            }
+
+            callback(null,zone)
+        })
     },
 
     update: function () {
-
-    },
-
-    create: function () {
 
     },
     
