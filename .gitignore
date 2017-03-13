@@ -37,3 +37,6 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+# Directory for es5 build files from es6
+public/build
