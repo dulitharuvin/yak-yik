@@ -29,3 +29,8 @@ React Js Related npm modules
     iii)npm install -D babel-preset-react
     
     iv) npm install -D babel-preset-es2015
+
+  5)Packages to handle api request from and to react components
+
+    i) npm install -s superagent
+
