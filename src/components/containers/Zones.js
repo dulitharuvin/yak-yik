@@ -75,8 +75,6 @@ class Zones extends Component {
                 <input id="zipCode" onChange={this.updateZone.bind(this)} type="text" className="form-control"
                        placeholder="Zip Code"/><br/>
                 <button onClick={this.addZone.bind(this)} className="btn btn-danger">Add Zone</button>
-
-
             </div>
         )
     }
