@@ -1,9 +1,10 @@
 /**
  * Created by Dulitha RD on 3/18/2017.
  */
-import React, {Component} from 'react'
-import Comment from '../presentation/Comment'
-import styles from './styles'
+import React, {Component} from "react";
+import Comment from "../presentation/Comment";
+import styles from "./styles";
+import {APIManager} from "../../utils";
 
 class Comments extends Component {
     constructor() {
@@ -17,6 +18,19 @@ class Comments extends Component {
             },
             list: []
         }
+    }
+
+    componentDidMount() {
+        APIManager.get('/api/comment', null, (err, response)=> {
+            if (err) {
+                alert('ERROR: ' + err)
+                return
+            }
+
+            this.setState({
+                list: response.results
+            })
+        })
     }
 
     submitComment() {
