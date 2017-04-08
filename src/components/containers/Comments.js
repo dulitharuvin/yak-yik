@@ -1,27 +1,26 @@
 /**
  * Created by Dulitha RD on 3/18/2017.
  */
-import React, {Component} from "react";
-import Comment from "../presentation/Comment";
+import React, { Component } from "react";
+import { CreateComment, Comment } from "../presentation";
 import styles from "./styles";
-import {APIManager} from "../../utils";
+import { APIManager } from "../../utils";
 
 class Comments extends Component {
     constructor() {
         super()
 
         this.state = {
-            comment: {
-                username: '',
-                body: '',
-                timestamp: ''
-            },
+            // comment: {
+            //     username: '',
+            //     body: ''
+            // },
             list: []
         }
     }
 
     componentDidMount() {
-        APIManager.get('/api/comment', null, (err, response)=> {
+        APIManager.get('/api/comment', null, (err, response) => {
             if (err) {
                 alert('ERROR: ' + err)
                 return
@@ -33,49 +32,24 @@ class Comments extends Component {
         })
     }
 
-    submitComment() {
-        console.log('submitComment' + JSON.stringify(this.state.comment))
+    //setState() function also re-render the component but reloads only if there are any visual differences in the dom than before
+    submitComment(comment) {
+        console.log('submitComment: ' + JSON.stringify(comment))
 
-        let updatedList = Object.assign([], this.state.list)
-        updatedList.push(this.state.comment)
+        // let updatedComment = Object.assign({}, this.state.comment)
+        let updatedComment = Object.assign({}, comment)
+        APIManager.post('/api/comment', updatedComment, (err, response) => {
+            if (err) {
+                alert(err)
+                return
+            }
 
-        this.setState({         //setState() function also re-render the component but reloads only if there are any visual differences
-            list: updatedList   // in the dom than before
-
-        })
-    }
-
-    updateUsername(event) {
-        // console.log('updateUsername: ' + event.target.value)
-        //this.state.comment['username'] = event.target.value //WRONG! with react, never mutate the 'state'
-
-        let updatedComment = Object.assign({}, this.state.comment)
-        updatedComment['username'] = event.target.value
-
-        this.setState({
-            comment: updatedComment
-        })
-    }
-
-    updateBody(event) {
-        // console.log('updateBody: ' + event.target.value)
-
-        let updatedComment = Object.assign({}, this.state.comment)
-        updatedComment['body'] = event.target.value
-
-        this.setState({
-            comment: updatedComment
-        })
-    }
-
-    updateTimeStamp(event) {
-        // console.log('updateTimestamp: ' + event.target.value)
-
-        let updatedComment = Object.assign({}, this.state.comment)
-        updatedComment['timestamp'] = event.target.value
-
-        this.setState({
-            comment: updatedComment
+            console.log(JSON.stringify(response))
+            let updatedList = Object.assign([], this.state.list)
+            updatedList.push(response.result)
+            this.setState({
+                list: updatedList
+            })
         })
     }
 
@@ -83,7 +57,7 @@ class Comments extends Component {
 
         const commentList = this.state.list.map((comment, i) => {
             return (
-                <li key={i}><Comment currentComment={comment}/></li>
+                <li key={i}><Comment currentComment={comment} /></li>
             )
         })
         return (
@@ -93,14 +67,8 @@ class Comments extends Component {
                     <ul style={styles.comment.commentsList}>
                         {commentList}
                     </ul>
-
-                    <input onChange={this.updateUsername.bind(this)} className="form-control" type="text"
-                           placeholder="Username"/><br />
-                    <input onChange={this.updateBody.bind(this)} className="form-control" type="text"
-                           placeholder="Comment"/><br />
-                    <input onChange={this.updateTimeStamp.bind(this)} className="form-control" type="text"
-                           placeholder="Time stamp"/><br />
-                    <button onClick={this.submitComment.bind(this)} className="btn btn-info">Submit Comment</button>
+                    {/*We can pass along whole functions as component properties( bind it )*/}
+                    <CreateComment onCreate={this.submitComment.bind(this)} />
                 </div>
             </div>
         )

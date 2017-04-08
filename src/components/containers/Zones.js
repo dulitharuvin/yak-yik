@@ -1,25 +1,22 @@
 /**
  * Created by Dulitha RD on 3/13/2017.
  */
-import React, {Component} from "react";
-import Zone from "../presentation/Zone";
-import {APIManager} from "../../utils";
+import React, { Component } from "react";
+import { Zone, CreateZone } from "../presentation";
+import { APIManager } from "../../utils";
 
 class Zones extends Component {
     constructor() { //constructor is the initializer of the object
         super()
         this.state = {
-            zone: {
-                name: '',
-                zipCode: ''
-            },
+            selected: 0,
             list: []
         }
     }
 
     componentDidMount() {
         console.log('componentDidMount')
-        APIManager.get('/api/zone', null, (err, response)=> {
+        APIManager.get('/api/zone', null, (err, response) => {
             if (err) {
                 alert('ERROR: ' + err.message)
                 return
@@ -31,45 +28,41 @@ class Zones extends Component {
         })
     }
 
-    updateZone(event) {
-        console.log('updateZone ' + event.target.id + '===' + event.target.value)
-        let updatedZone = Object.assign({}, this.state.zone)
-        updatedZone[event.target.id] = event.target.value
-        this.setState({
-            zone: updatedZone
-        })
-    }
+    addZone(zone) {
 
-    addZone() {
+        let updatedZone = Object.assign({}, zone)
+        // updatedZone['zipCodes'] = updatedZone.zipCode.split(',')
+        // console.log('ADD ZONE ' + JSON.stringify(zone))
 
-        let updatedZone = Object.assign({}, this.state.zone)
-        updatedZone['zipCodes'] = updatedZone.zipCode.split(',')
-        console.log('ADD ZONE ' + JSON.stringify(updatedZone))
-
-        APIManager.post('/api/zone',updatedZone,(err,response)=>{
-            if(err){
-                alert('ERROR: '+err.message )
+        APIManager.post('/api/zone', updatedZone, (err, response) => {
+            if (err) {
+                alert('ERROR: ' + err.message)
                 return
             }
 
             console.log('ZONE CREATED: ' + JSON.stringify(response))
-            let updatedList = Object.assign([],this.state.list)
+            let updatedList = Object.assign([], this.state.list)
             updatedList.push(response.result)
             this.setState({
                 list: updatedList
             })
         })
-        // let updatedList = Object.assign([], this.state.list)
-        // updatedList.push(this.state.zone)
-        // this.setState({
-        //     list: updatedList
-        // })
+    }
+
+    selectZone(index){
+        console.log('selectZone:' + index)
+        this.setState({
+            selected : index
+        })
     }
 
     render() {
-        const listItems = this.state.list.map((zone, i)=> {
+        const listItems = this.state.list.map((zone, i) => {
+            let selected = (i == this.state.selected)
             return (
-                <li key={i}><Zone currentZone={zone}/></li>
+                <li key={i}>
+                    <Zone index={i} select={this.selectZone.bind(this)} isSelected={selected} currentZone={zone} />
+                </li>
             )
         })
 
@@ -79,11 +72,7 @@ class Zones extends Component {
                     {listItems}
                 </ol>
 
-                <input id="name" onChange={this.updateZone.bind(this)} type="text" className="form-control"
-                       placeholder="Name"/><br/>
-                <input id="zipCode" onChange={this.updateZone.bind(this)} type="text" className="form-control"
-                       placeholder="Zip Code"/><br/>
-                <button onClick={this.addZone.bind(this)} className="btn btn-danger">Add Zone</button>
+                <CreateZone onCreate={this.addZone.bind(this)} />
             </div>
         )
     }
